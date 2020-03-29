@@ -14,7 +14,6 @@ using std::make_unique;
 // constructor WITHOUT memory allocation
 ChatBot::ChatBot() {
   // invalidate data handles
-  // _image = nullptr;
   _chatLogic = nullptr;
   _rootNode = nullptr;
 }
