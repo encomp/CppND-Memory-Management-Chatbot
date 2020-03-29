@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <ctime>
 #include <iostream>
+#include <memory>
 #include <random>
 
 #include "chatbot.h"
@@ -8,10 +9,12 @@
 #include "graphedge.h"
 #include "graphnode.h"
 
+using std::make_unique;
+
 // constructor WITHOUT memory allocation
 ChatBot::ChatBot() {
   // invalidate data handles
-  _image = nullptr;
+  // _image = nullptr;
   _chatLogic = nullptr;
   _rootNode = nullptr;
 }
@@ -19,37 +22,70 @@ ChatBot::ChatBot() {
 // constructor WITH memory allocation
 ChatBot::ChatBot(std::string filename) {
   std::cout << "ChatBot Constructor" << std::endl;
-
   // invalidate data handles
   _chatLogic = nullptr;
   _rootNode = nullptr;
-
   // load image into heap memory
-  _image = new wxBitmap(filename, wxBITMAP_TYPE_PNG);
+  _image = make_unique<wxBitmap>(filename, wxBITMAP_TYPE_PNG);
 }
 
-ChatBot::~ChatBot() {
-  std::cout << "ChatBot Destructor" << std::endl;
-
-  // deallocate heap memory
-  if (_image != NULL) // Attention: wxWidgets used NULL and not nullptr
-  {
-    delete _image;
-    _image = NULL;
+// copy constructor
+ChatBot::ChatBot(const ChatBot &source) {
+  std::cout << "ChatBot COPY Constructor" << std::endl;
+  _chatLogic = source._chatLogic;
+  _rootNode = source._rootNode;
+  if (source._image) {
+    _image = make_unique<wxBitmap>(source._image->GetNSImage());
   }
 }
 
-//// STUDENT CODE
-////
+// move constructor
+ChatBot::ChatBot(ChatBot &&source) {
+  std::cout << "ChatBot MOVING (c’tor) instance " << &source << " to instance "
+            << this << std::endl;
+  _chatLogic = source._chatLogic;
+  _rootNode = source._rootNode;
+  if (source._image) {
+    _image = std::move(source._image);
+  }
+  source._chatLogic = nullptr;
+  source._rootNode = nullptr;
+}
 
-////
-//// EOF STUDENT CODE
+// copy assignment operator
+ChatBot &ChatBot::operator=(const ChatBot &source) {
+  std::cout << "ChatBot ASSIGNING content of instance" << std::endl;
+  if (this != &source) {
+    _chatLogic = source._chatLogic;
+    _rootNode = source._rootNode;
+    if (source._image) {
+      _image = make_unique<wxBitmap>(source._image->GetNSImage());
+    }
+  }
+  return *this;
+}
+
+ChatBot &ChatBot::operator=(ChatBot &&source) {
+  std::cout << "ChatBot MOVING (assign) instance " << &source << " to instance "
+            << this << std::endl;
+  if (this != &source) {
+    _chatLogic = source._chatLogic;
+    _rootNode = source._rootNode;
+    if (source._image) {
+      _image = std::move(source._image);
+    }
+    source._chatLogic = nullptr;
+    source._rootNode = nullptr;
+  }
+  return *this;
+}
+
+ChatBot::~ChatBot() { std::cout << "ChatBot Destructor" << std::endl; }
 
 void ChatBot::ReceiveMessageFromUser(std::string message) {
   // loop over all edges and keywords and compute Levenshtein distance to query
   typedef std::pair<GraphEdge *, int> EdgeDist;
   std::vector<EdgeDist> levDists; // format is <ptr,levDist>
-
   for (size_t i = 0; i < _currentNode->GetNumberOfChildEdges(); ++i) {
     GraphEdge *edge = _currentNode->GetChildEdgeAtIndex(i);
     for (auto keyword : edge->GetKeywords()) {
@@ -57,7 +93,6 @@ void ChatBot::ReceiveMessageFromUser(std::string message) {
       levDists.push_back(ed);
     }
   }
-
   // select best fitting edge to proceed along
   GraphNode *newNode;
   if (levDists.size() > 0) {
@@ -72,7 +107,6 @@ void ChatBot::ReceiveMessageFromUser(std::string message) {
     // go back to root node
     newNode = _rootNode;
   }
-
   // tell current node to move chatbot to new node
   _currentNode->MoveChatbotToNewNode(newNode);
 }
@@ -80,13 +114,11 @@ void ChatBot::ReceiveMessageFromUser(std::string message) {
 void ChatBot::SetCurrentNode(GraphNode *node) {
   // update pointer to current node
   _currentNode = node;
-
   // select a random node answer (if several answers should exist)
   std::vector<std::string> answers = _currentNode->GetAnswers();
   std::mt19937 generator(int(std::time(0)));
   std::uniform_int_distribution<int> dis(0, answers.size() - 1);
   std::string answer = answers.at(dis(generator));
-
   // send selected node answer to user
   _chatLogic->SendMessageToUser(answer);
 }
@@ -95,7 +127,6 @@ int ChatBot::ComputeLevenshteinDistance(std::string s1, std::string s2) {
   // convert both strings to upper-case before comparing
   std::transform(s1.begin(), s1.end(), s1.begin(), ::toupper);
   std::transform(s2.begin(), s2.end(), s2.begin(), ::toupper);
-
   // compute Levenshtein distance measure between both strings
   const size_t m(s1.size());
   const size_t n(s2.size());
