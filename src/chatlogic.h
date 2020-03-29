@@ -2,8 +2,12 @@
 #define CHATLOGIC_H_
 
 #include "chatgui.h"
+#include <memory>
 #include <string>
 #include <vector>
+
+using std::vector;
+using std::unique_ptr;
 
 // forward declarations
 class ChatBot;
@@ -16,8 +20,9 @@ private:
   ////
 
   // data handles (owned)
-  std::vector<GraphNode *> _nodes;
-  std::vector<GraphEdge *> _edges;
+
+  vector<unique_ptr<GraphNode>> _nodes;
+  vector<GraphEdge *> _edges;
 
   ////
   //// EOF STUDENT CODE
@@ -39,11 +44,9 @@ public:
   // constructor / destructor
   ChatLogic();
   ~ChatLogic();
-
   // getter / setter
   void SetPanelDialogHandle(ChatBotPanelDialog *panelDialog);
   void SetChatbotHandle(ChatBot *chatbot);
-
   // proprietary functions
   void LoadAnswerGraphFromFile(std::string filename);
   void SendMessageToChatbot(std::string message);
