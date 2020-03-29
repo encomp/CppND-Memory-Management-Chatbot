@@ -79,7 +79,11 @@ ChatBot &ChatBot::operator=(ChatBot &&source) {
   return *this;
 }
 
-ChatBot::~ChatBot() { std::cout << "ChatBot Destructor" << std::endl; }
+ChatBot::~ChatBot() {
+  std::cout << "ChatBot Destructor" << std::endl;
+  _chatLogic = nullptr;
+  _rootNode = nullptr;
+}
 
 void ChatBot::ReceiveMessageFromUser(std::string message) {
   // loop over all edges and keywords and compute Levenshtein distance to query
