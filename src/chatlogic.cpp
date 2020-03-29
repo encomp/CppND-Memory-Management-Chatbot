@@ -24,16 +24,7 @@ ChatLogic::ChatLogic() {
   _chatBot->SetChatLogicHandle(this);
 }
 
-ChatLogic::~ChatLogic() {
-  //// STUDENT CODE
-  ////
-
-  // delete chatbot instance
-  //delete _chatBot;
-
-  ////
-  //// EOF STUDENT CODE
-}
+ChatLogic::~ChatLogic() {}
 
 template <typename T>
 void ChatLogic::AddAllTokensToElement(std::string tokenID, tokenlist &tokens,

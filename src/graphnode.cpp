@@ -7,13 +7,7 @@ using std::unique_ptr;
 
 GraphNode::GraphNode(int id) { _id = id; }
 
-GraphNode::~GraphNode() {
-  //// STUDENT CODE
-  ////
-
-  ////
-  //// EOF STUDENT CODE
-}
+GraphNode::~GraphNode() {}
 
 void GraphNode::AddToken(std::string token) { _answers.push_back(token); }
 
@@ -32,7 +26,6 @@ void GraphNode::MoveChatbotHere(unique_ptr<ChatBot> chatbot) {
 
 void GraphNode::MoveChatbotToNewNode(GraphNode *newNode) {
   newNode->MoveChatbotHere(std::move(_chatBot));
-  _chatBot = nullptr; // invalidate pointer at source
 }
 
 GraphEdge *GraphNode::GetChildEdgeAtIndex(int index) {

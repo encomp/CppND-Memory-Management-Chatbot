@@ -64,6 +64,7 @@ ChatBot &ChatBot::operator=(const ChatBot &source) {
   return *this;
 }
 
+// move assignment operator
 ChatBot &ChatBot::operator=(ChatBot &&source) {
   std::cout << "ChatBot MOVING (assign) instance " << &source << " to instance "
             << this << std::endl;
