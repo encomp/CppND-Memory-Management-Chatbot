@@ -12,8 +12,8 @@
 #include "graphedge.h"
 #include "graphnode.h"
 
-using std::unique_ptr;
 using std::make_unique;
+using std::unique_ptr;
 
 ChatLogic::ChatLogic() {
   //// STUDENT CODE
@@ -169,17 +169,16 @@ void ChatLogic::LoadAnswerGraphFromFile(std::string filename) {
                   });
 
               // create new edge
-              GraphEdge *edge = new GraphEdge(id);
+              unique_ptr<GraphEdge> edge = make_unique<GraphEdge>(id);
               edge->SetChildNode(childNode->get());
               edge->SetParentNode(parentNode->get());
-              _edges.emplace_back(edge);
 
               // find all keywords for current node
               AddAllTokensToElement("KEYWORD", tokens, *edge);
 
               // store reference in child node and parent node
-              (*childNode)->AddEdgeToParentNode(edge);
-              (*parentNode)->AddEdgeToChildNode(edge);
+              (*childNode)->AddEdgeToParentNode(edge.get());
+              (*parentNode)->AddEdgeToChildNode(std::move(edge));
             }
 
             ////

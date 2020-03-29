@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 
-using std::vector;
 using std::unique_ptr;
+using std::vector;
 
 // forward declarations
 class ChatBot;
@@ -18,7 +18,6 @@ class ChatLogic {
 private:
   // data handles (owned)
   vector<unique_ptr<GraphNode>> _nodes;
-  vector<unique_ptr<GraphEdge>> _edges;
 
   // data handles (not owned)
   GraphNode *_currentNode;
