@@ -25,7 +25,7 @@ ChatBot::ChatBot(std::string filename) {
   _chatLogic = nullptr;
   _rootNode = nullptr;
   // load image into heap memory
-  _image = make_unique<wxBitmap>(filename, wxBITMAP_TYPE_PNG);
+  _image.reset(new wxBitmap(filename, wxBITMAP_TYPE_PNG));
 }
 
 // copy constructor
@@ -33,9 +33,8 @@ ChatBot::ChatBot(const ChatBot &source) {
   std::cout << "ChatBot COPY Constructor" << std::endl;
   _chatLogic = source._chatLogic;
   _rootNode = source._rootNode;
-  if (source._image) {
-    _image = make_unique<wxBitmap>(*source._image.get());
-  }
+  _image.reset(new wxBitmap(*source._image.get()));
+  _chatLogic->SetChatbotHandle(this);
 }
 
 // move constructor
@@ -44,9 +43,8 @@ ChatBot::ChatBot(ChatBot &&source) {
             << this << std::endl;
   _chatLogic = source._chatLogic;
   _rootNode = source._rootNode;
-  if (source._image) {
-    _image = std::move(source._image);
-  }
+  _image = std::move(source._image);
+  _chatLogic->SetChatbotHandle(this);
   source._chatLogic = nullptr;
   source._rootNode = nullptr;
 }
@@ -57,9 +55,8 @@ ChatBot &ChatBot::operator=(const ChatBot &source) {
   if (this != &source) {
     _chatLogic = source._chatLogic;
     _rootNode = source._rootNode;
-    if (source._image) {
-      _image = make_unique<wxBitmap>(*source._image.get());
-    }
+    _image.reset(new wxBitmap(*source._image.get()));
+    _chatLogic->SetChatbotHandle(this);
   }
   return *this;
 }
@@ -71,9 +68,8 @@ ChatBot &ChatBot::operator=(ChatBot &&source) {
   if (this != &source) {
     _chatLogic = source._chatLogic;
     _rootNode = source._rootNode;
-    if (source._image) {
-      _image = std::move(source._image);
-    }
+    _image = std::move(source._image);
+    _chatLogic->SetChatbotHandle(this);
     source._chatLogic = nullptr;
     source._rootNode = nullptr;
   }

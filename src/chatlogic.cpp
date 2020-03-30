@@ -15,14 +15,7 @@
 using std::make_unique;
 using std::unique_ptr;
 
-ChatLogic::ChatLogic() {
-  // create instance of chatbot
-  _chatBot = new ChatBot("../images/chatbot.png");
-
-  // add pointer to chatlogic so that chatbot answers can be passed on to the
-  // GUI
-  _chatBot->SetChatLogicHandle(this);
-}
+ChatLogic::ChatLogic() {}
 
 ChatLogic::~ChatLogic() {}
 
@@ -197,16 +190,21 @@ void ChatLogic::LoadAnswerGraphFromFile(std::string filename) {
     }
   }
 
+  unique_ptr<ChatBot> chatBot = make_unique<ChatBot>("../images/chatbot.png");
   // add chatbot to graph root node
+  this->SetChatbotHandle(chatBot.get());
   _chatBot->SetRootNode(rootNode);
-  rootNode->MoveChatbotHere(std::move(unique_ptr<ChatBot>(_chatBot)));
+  rootNode->MoveChatbotHere(std::move(chatBot));
 }
 
 void ChatLogic::SetPanelDialogHandle(ChatBotPanelDialog *panelDialog) {
   _panelDialog = panelDialog;
 }
 
-void ChatLogic::SetChatbotHandle(ChatBot *chatbot) { _chatBot = chatbot; }
+void ChatLogic::SetChatbotHandle(ChatBot *chatbot) { 
+  _chatBot = chatbot;
+  _chatBot->SetChatLogicHandle(this);
+}
 
 void ChatLogic::SendMessageToChatbot(std::string message) {
   _chatBot->ReceiveMessageFromUser(message);
