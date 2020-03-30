@@ -34,7 +34,7 @@ ChatBot::ChatBot(const ChatBot &source) {
   _chatLogic = source._chatLogic;
   _rootNode = source._rootNode;
   if (source._image) {
-    _image = make_unique<wxBitmap>(source._image->GetNSImage());
+    _image = make_unique<wxBitmap>(*source._image.get());
   }
 }
 
@@ -58,7 +58,7 @@ ChatBot &ChatBot::operator=(const ChatBot &source) {
     _chatLogic = source._chatLogic;
     _rootNode = source._rootNode;
     if (source._image) {
-      _image = make_unique<wxBitmap>(source._image->GetNSImage());
+      _image = make_unique<wxBitmap>(*source._image.get());
     }
   }
   return *this;
